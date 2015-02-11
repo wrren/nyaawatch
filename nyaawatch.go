@@ -9,7 +9,29 @@ import (
 	"strings"
 	"path/filepath"
 	"time"
+	"strconv"
 )
+
+var Downloads []Series
+
+func alreadyDownloaded( episode Series ) bool {
+	for _, download := range Downloads {
+		if 	strings.EqualFold( download.Name, episode.Name ) 	&& 
+			strings.EqualFold( download.Subber, episode.Subber)	&&
+			strings.EqualFold( download.Quality, episode.Quality ) 	&&
+			download.Episode == episode.Episode {
+			return true;
+		}
+	}
+
+	return false
+}
+
+func downloaded( episode Series ) {
+	if !alreadyDownloaded( episode ) {
+		Downloads = append( Downloads, episode )
+	}
+}
 
 func refresh( config WatchConfig ) {
 	resp, err := http.Get( config.URL )
@@ -38,17 +60,13 @@ func refresh( config WatchConfig ) {
 	for _, e := range rss.Items.ItemList {
 		series, err := ParseSeries( e.Title, config.Regexes )
 
-		if err != nil {
+		if err != nil || alreadyDownloaded( series ) {
 			continue
 		}
 
 		for _, s := range config.Series {
-			if 	strings.EqualFold( s.Name, series.Name ) 	&& 
-				strings.EqualFold( s.Subber, series.Subber)	&&
-				strings.EqualFold( s.Quality, series.Quality ) {
-
-
-				path := filepath.Join( config.Directory, s.Subber + "." + s.Name + "." + s.Quality + ".torrent" )
+			if strings.EqualFold( s.Name, series.Name ) && strings.EqualFold( s.Subber, series.Subber ) && strings.EqualFold( s.Quality, series.Quality ){
+				path := filepath.Join( config.Directory, s.Subber + "." + s.Name + "." +  strconv.Itoa( series.Episode ) + "." + s.Quality + ".torrent" )
 
 				out, err := os.Create( path )
 				defer out.Close()
@@ -68,6 +86,7 @@ func refresh( config WatchConfig ) {
 					continue
 				}
 
+				downloaded( series )
 
 				fmt.Println( "Downloaded Torrent for ", s.Name, " to ", path )
 			}
@@ -77,6 +96,7 @@ func refresh( config WatchConfig ) {
 }
 
 func main() {
+	Downloads = make( []Series, 0, 100 )
 	args := os.Args[1:]
 
 	for _, e := range args {

@@ -5,12 +5,13 @@
 
 	"series": [
 		{ "name": "Aldnoah Zero", "subber": "HorribleSubs", "quality": "720" },
-		{ "name": "Cross Ange", "subber": "HorribleSubs", "quality": "720" }
+		{ "name": "Cross Ange", "subber": "HorribleSubs", "quality": "720" },
+		{ "name": "Parasyte - the maxim", "subber": "HorribleSubs", "quality": "720" }
 	],
 	
-	"directory" : "/path/to/watch/directory",
+	"directory" : "D:\\Downloads\\browser\\",
 
 	"regexes": [
-		"\\[(?P<subber>.+)\\]\\s*(?P<title>[\\s*\\w+]+?)[\\s*\\-*]+(?P<episode>\\d{1,3})v*\\d*\\s*[\\[\\(]{1}(?P<quality>\\d{3,4})p*[\\]\\)]{1}.+"
+		"\\[(?P<subber>.+)\\]\\s*(?P<title>.+?)[\\s*\\-*]+(?P<episode>\\d{1,3})v*\\d*\\s*[\\[\\(]{1}(?P<quality>\\d{3,4})p*[\\]\\)]{1}.+"
 	]
 }
