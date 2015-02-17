@@ -10,6 +10,7 @@ import (
 	"path/filepath"
 	"time"
 	"strconv"
+	"sync"
 )
 
 var Downloads []Series
@@ -33,7 +34,7 @@ func downloaded( episode Series ) {
 	}
 }
 
-func refresh( config WatchConfig ) {
+func refresh( config WatchConfig, wg *sync.WaitGroup ) {
 	resp, err := http.Get( config.URL )
 
 	if err != nil {
@@ -93,11 +94,22 @@ func refresh( config WatchConfig ) {
 
 		}
 	}
+
+	time.Sleep( time.Second * time.Duration( config.Refresh ) )
 }
 
 func main() {
 	Downloads = make( []Series, 0, 100 )
 	args := os.Args[1:]
+
+	if len( args ) == 0 {
+		fmt.Println( "usage:" )
+		fmt.Println( "\tnyaawatch config_file..." )
+
+		return
+	}
+
+	var wg sync.WaitGroup
 
 	for _, e := range args {
 		fmt.Println( "Reading Configuration from ", e )
@@ -116,9 +128,9 @@ func main() {
 			return
 		}
 
-		for {
-			refresh( config )
-			time.Sleep( time.Second * time.Duration( config.Refresh ) )
-		}
+		wg.Add( 1 )
+		go refresh( config, &wg )
 	}
+
+	wg.Wait()
 }

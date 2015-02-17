@@ -20,12 +20,12 @@ type WatchConfig struct {
 }
 
 func ReadConfig(in []byte) (WatchConfig, error) {
-	var list WatchConfig
-	err := json.Unmarshal(in, &list)
+	var config WatchConfig
+	err := json.Unmarshal(in, &config)
 
 	if err != nil {
-		return list, err
+		return config, err
 	}
 
-	return list, nil
+	return config, nil
 }
