@@ -34,13 +34,18 @@ func downloaded( episode Series ) {
 	}
 }
 
+func sleep( config WatchConfig ) {
+	time.Sleep( time.Second * time.Duration( config.Refresh ) )
+}
+
 func refresh( config WatchConfig, wg *sync.WaitGroup ) {
 	for {
 		resp, err := http.Get( config.URL )
 
 		if err != nil {
 			fmt.Println( "Could Not Retrieve RSS Feed: ", err )
-			return
+			sleep( config )
+			continue
 		}
 
 		defer resp.Body.Close()
@@ -49,16 +54,18 @@ func refresh( config WatchConfig, wg *sync.WaitGroup ) {
 
 		if err != nil {
 			fmt.Println( "Could Not Read RSS Feed Body: ", err )
-			return
+			sleep( config )
+			continue
 		}
 
 		rss, err := ReadRSS( body )
 
 		if err != nil {
 			fmt.Println( "Could Not Parse RSS Feed Body: ", err )
-			return
-		}
-
+			sleep( config )
+			continue
+		} 
+		
 		for _, e := range rss.Items.ItemList {
 			series, err := ParseSeries( e.Title, config.Regexes )
 
@@ -96,7 +103,7 @@ func refresh( config WatchConfig, wg *sync.WaitGroup ) {
 			}
 		}
 
-		time.Sleep( time.Second * time.Duration( config.Refresh ) )
+		sleep( config )
 	}
 }
 
