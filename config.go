@@ -11,12 +11,21 @@ type Series struct {
 	Episode int
 }
 
+type NotificationConfig struct {
+	From 		string
+	To 		string
+	Password 	string
+	Server		string
+	Port 		int
+}
+
 type WatchConfig struct {
-	URL       string
-	Directory string
-	Refresh   int
-	Series    []Series
-	Regexes   []string
+	URL       	string
+	Notify		NotificationConfig
+	Directory 	string
+	Refresh   	int
+	Series    	[]Series
+	Regexes   	[]string
 }
 
 func ReadConfig(in []byte) (WatchConfig, error) {

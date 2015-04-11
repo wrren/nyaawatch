@@ -21,17 +21,20 @@ func alreadyDownloaded( episode Series ) bool {
 			strings.EqualFold( download.Subber, episode.Subber)	&&
 			strings.EqualFold( download.Quality, episode.Quality ) 	&&
 			download.Episode == episode.Episode {
-			return true;
+			return true
 		}
 	}
 
 	return false
 }
 
-func downloaded( episode Series ) {
+func downloaded( episode Series ) bool {
 	if !alreadyDownloaded( episode ) {
 		Downloads = append( Downloads, episode )
+		return true
 	}
+
+	return false
 }
 
 func sleep( config WatchConfig ) {
@@ -96,6 +99,8 @@ func refresh( config WatchConfig, wg *sync.WaitGroup ) {
 					}
 
 					downloaded( series )
+
+					Notify( series, config.Notify )
 
 					fmt.Println( "Downloaded Torrent for ", s.Name, " to ", path )
 				}

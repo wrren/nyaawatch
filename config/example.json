@@ -1,6 +1,14 @@
 {
 	"url": "http://www.nyaa.se/?page=rss",
 
+	"notify": {
+		"from": "from.address@server.com",
+		"to": "to.address@server.com",
+		"password": "smtp.password",
+		"server": "smtp.server.com",
+		"port": 0,
+	},
+
 	"refresh": 300,
 
 	"series": [
